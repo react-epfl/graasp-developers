@@ -3,48 +3,79 @@ title: API Reference
 
 language_tabs: # must be one of https://git.io/vQNgJ
   - shell
-  - ruby
-  - python
-  - javascript
 
 toc_footers:
   - <a href='#'>Sign Up for a Developer Key</a>
   - <a href='https://github.com/lord/slate'>Documentation Powered by Slate</a>
-
-includes:
-  - errors
 
 search: true
 ---
 
 # Introduction
 
-Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.
+Welcome to the Triangle comparator App Documentation! This App based source code has been forked from [react-epfl/graasp-app-starter-react](https://github.com/react-epfl/graasp-app-starter-react)
 
-We have language bindings in Shell, Ruby, Python, and JavaScript! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
+The main goal is compares two triangles based on: `points coordinates, angles or sides`.
 
-This example API documentation page was created with [Slate](https://github.com/lord/slate). Feel free to edit it and use it as a base for your own API's documentation.
+For our first version we can only test triangles with `x` and `y` coordinates of each triangles point and tell if they are similar or not. In our next version we will be adding the possibility to compare triangles using `Angles` or `Sides`.
 
-# Authentication
+This Triangles comparator documentation page was created with [Slate](https://github.com/lord/slate).
 
-> To authorize, use this code:
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
+This source code is divided into several components.
+```
+common
+forms
+preview
 ```
 
-```python
-import kittn
+The `static propTypes` will be used for all changes validation in certain classes.
 
-api = kittn.authorize('meowmeowmeow')
+```shell
+static propTypes = {
+  ...
+}
+
 ```
+
+# Initial Structure
+
+> This is our main Code structure:
 
 ```shell
 # With shell, you can just pass the correct header with each request
-curl "api_endpoint_here"
-  -H "Authorization: meowmeowmeow"
+Main "https://github.com/react-epfl/graasp-app-starter-react"
+  .idea
+  public
+    index.html
+    favicon.ico
+    manifest.json
+  scripts
+    setup.sh
+  src
+    common  
+      Error.js
+    student
+      StudentView.js
+    teacher
+      TeacherView.js
+    App.css
+    App.js
+    App.test.js
+    index.css
+    index.js
+    logo.svg
+    registerServiceWorker.js
+  .editorconfig
+  .eslintignore
+  .gitignore
+  .huskryc
+  .npmrc
+  CHANGELOG.md
+  LICENSE
+  README.md
+  commitlint.config.js
+  package.json
+  yarn.lock
 ```
 
 ```javascript
@@ -55,185 +86,184 @@ let api = kittn.authorize('meowmeowmeow');
 
 > Make sure to replace `meowmeowmeow` with your API key.
 
-Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our [developer portal](http://example.com/developers).
+The `student and teacher` folders are the template rendering student and teacher view initially that we will have to modify later in our case.
 
-Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:
+Firstly we will have to work on the `Student view` since only students are going to learn about triangles now.
 
-`Authorization: meowmeowmeow`
+# Components
 
-<aside class="notice">
-You must replace <code>meowmeowmeow</code> with your personal API key.
-</aside>
+## common
 
-# Kittens
+This folder only contains our `Triangles Comparator Button Class` that handle all triangles datas and check if the two triangles are similar or not.
 
-## Get All Kittens
+### Our initial state
 
-```ruby
-require 'kittn'
+Here we initialise the default state for all calculated values from our `SimulationButtons` class.
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get
-```
+The `flash` params handle when the flash message should be displayed or not;
 
-```python
-import kittn
+The `visible` params handle when to display the `Alert` on the page since it should be displayed only when a user clicks on the button and will disappear when click on it close button.
 
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get()
-```
+Finally the `success` is the `Object` that contain the calculated values.
+
+> This is our main Code structure:
 
 ```shell
-curl "http://example.com/api/kittens"
-  -H "Authorization: meowmeowmeow"
+constructor(props) {
+  super(props);
+  this.state = {
+    flashed: props.flashed,
+    visible: true,
+    success: {
+      value1: '',
+      value2: '',
+      value3: '',
+    },
+  };
+  this.onDismiss = this.onDismiss.bind(this);
+}
+```
+### handleSimulate: function()
+
+This function is called when the Compare button is clicked from the triangles view. It get all the coordinates for each point. Basically we have Triangle `ABC` and `DEF` so for the first triangle points coordinates we have: `A(x, y), B(x, y), C(x, y)` and for the second one we have: `D(x, y) , E(x, y), F(x, y)`. Then from these point `x` and `y` coordinates, we calculate the distance between each point respectively `AB, AC, BC` for the triangle `ABC` and `DE, DF, EF` for the triangle `DEF`. Then we divide each distance side by side and save the results into our `application state`
+
+> Our handleSimulate function:
+
+```shell
+handleSimulate = () => {
+  ...
+}
+```
+### handleMessage: function()
+
+This function recover the calculated results from our `application state` and check if they are equal then render a `flash message` with value: `Triangle ABC DEF are similar` else `Triangle ABC and DEF are not similar`
+> Our handleMessage function :
+
+```shell
+handleMessage = () => {
+  ...
+}
 ```
 
-```javascript
-const kittn = require('kittn');
+## forms
 
-let api = kittn.authorize('meowmeowmeow');
-let kittens = api.kittens.get();
+This folder contains Dimensions and FormView Classes.
+
+The `Dimension` class is in charge of just displaying the title `Triangle ...` for each triangle, the corresponding form and also the triangle tree.
+Within it `constructor`, we define the default triangle point coordinates `x` and `y` value as well.
+
+The `FormView` class contains a table with all input fields used to set each coordinates as well and also the buttons to rotate left or right or to shift our triangle to left or right based on student choice. It will pass it to our `Dimensions` Class to render the `Table`. As we have multiple input that are all similar, we created our `TableDatas` Component that return a single `td` with the right inputs.
+
+We then handle the form input changes with the `handlePChange` function that we pass to our form Component.
+
+> Our Dimensions constructor
+
+```shell
+constructor(props) {
+  super(props);
+  this.state = {
+    rotated: false,
+    points: this.props,
+  };
+}
 ```
 
-> The above command returns JSON structured like this:
+> Our FormView constructor
 
-```json
-[
-  {
-    "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
-  },
-  {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
+```shell
+constructor(props) {
+  super(props);
+  this.state = {
+    rotated: this.props,
+    points: this.props,
+  };
+}
+```
+
+### handlePointChange function()
+
+This function is called when all our different form input value change; then check if the value is empty, replace it by 0 since the input can not be null in our case, and fill in an input by 300 when the value is higher than 300. Once these controls are completed, it then passes all the new coordinates to it parent witch is our `Dimension` class by calling the `handlePChange` function and sending params: `handlePChange(newPoints)`
+
+```shell
+handlePointChange = (event) => {
+  ...
+}
+```
+
+### handleShiftRight function()
+Here we, start by increasing all coordinates by 20, then we check the first Point that x coordinates has reached 300 and then we stop increasing the other point `x` coordinates values to avoid getting the triangle out of the box.
+
+```shell
+handleShiftRight = (event) => {
+  ...
+}
+```
+### handleShiftLeft function()
+Unlike to the previous, we will just need to decrease by 20 and then stop when we found the first point that has it `x` coordinate value less than 20.
+
+```shell
+handleShiftLeft = (event) => {
+  ...
+}
+```
+### handleRotate function()
+For the Rotation, we firstly get the middle of the triangle then make the rotation or 90 degree.
+
+```shell
+handleRotate = (event) => {
+  ...
+}
+```
+
+## preview
+Here we just import [react-konva](http://konvajs.github.io) library we used to draw our triangle. This folder contains our Tri class that draw and display our Triangle. The `Text` tag helped us to append our triangle laters to eat point at a specific coordinate.
+
+```shell
+const Tri = ({ color, node, points }) => (
+  <Layer>
+    ...
+  </Layer>
+);
+export default Tri;
+```
+
+# Student View
+Basically our have Two different views: student and teacher's one. But currently all passes in the student view
+From here we just call our Dimension Class then pass all datas it needs to such as: the triangle, the translation, the update method, the triangles nodes as well as the related colors. We also pass the translation, triangles and flash parameters to our Simulation button class to automatically handle all changes.
+
+```shell
+const StudentView extends Component {
+  static propTypes = {
+    ...
   }
-]
+
+  constructor(props) {
+    ...
+  }
+}
+export default StudentView;
 ```
 
-This endpoint retrieves all kittens.
+# Teach View
 
-### HTTP Request
-
-`GET http://example.com/api/kittens`
-
-### Query Parameters
-
-Parameter | Default | Description
---------- | ------- | -----------
-include_cats | false | If set to true, the result will also include cats.
-available | true | If set to false, the result will include kittens that have already been adopted.
-
-<aside class="success">
-Remember — a happy kitten is an authenticated kitten!
-</aside>
-
-## Get a Specific Kitten
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get(2)
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get(2)
-```
+For the moment our Teacher view just contain a welcome message nothing else. But we will certainly update it as soon as possible. But we pass the `t` in params to allow the translation function works.
 
 ```shell
-curl "http://example.com/api/kittens/2"
-  -H "Authorization: meowmeowmeow"
+const TeacherView = ({ t }) => (
+  <Layer>
+    ...
+  </Layer>
+);
+export default TeacherView;
 ```
 
-```javascript
-const kittn = require('kittn');
+# App.js
 
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.get(2);
-```
+This is the core App that handle our teacher and student views and render the corresponding. But default, we just set the student View as default one. So when our App loads, we see the student view that contains all the other stuffs. Note that in `React JS` everything in our App should be in separated components.
 
-> The above command returns JSON structured like this:
+# index.js
 
-```json
-{
-  "id": 2,
-  "name": "Max",
-  "breed": "unknown",
-  "fluffiness": 5,
-  "cuteness": 10
-}
-```
+Everything begins from here. The main parent that import our App.js, our style files and all necessary files we need on our App initialisation.
 
-This endpoint retrieves a specific kitten.
-
-<aside class="warning">Inside HTML code blocks like this one, you can't use Markdown, so use <code>&lt;code&gt;</code> blocks to denote code.</aside>
-
-### HTTP Request
-
-`GET http://example.com/kittens/<ID>`
-
-### URL Parameters
-
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to retrieve
-
-## Delete a Specific Kitten
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.delete(2)
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.delete(2)
-```
-
-```shell
-curl "http://example.com/api/kittens/2"
-  -X DELETE
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.delete(2);
-```
-
-> The above command returns JSON structured like this:
-
-```json
-{
-  "id": 2,
-  "deleted" : ":("
-}
-```
-
-This endpoint deletes a specific kitten.
-
-### HTTP Request
-
-`DELETE http://example.com/kittens/<ID>`
-
-### URL Parameters
-
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to delete
-
+# Translation
+We used the [react-i18next](https://github.com/i18next/react-i18next) library for the translation feature. But all our translation words are located in our `translate.json` file. We use the `t` params in all our components and classes to call the translation function, then we pass it the requested word for the translation to render the right text based on the params.

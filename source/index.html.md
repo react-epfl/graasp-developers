@@ -3,9 +3,6 @@ title: API Reference
 
 language_tabs: # must be one of https://git.io/vQNgJ
   - shell
-  - ruby
-  - python
-  - javascript
 
 toc_footers:
   - <a href='#'>Sign Up for a Developer Key</a>
@@ -89,7 +86,7 @@ let api = kittn.authorize('meowmeowmeow');
 
 > Make sure to replace `meowmeowmeow` with your API key.
 
-The `student and teacher` folders are the template rendering student and teacher view initialy that we will have to modify later in our case.
+The `student and teacher` folders are the template rendering student and teacher view initially that we will have to modify later in our case.
 
 Firstly we will have to work on the `Student view` since only students are going to learn about triangles now.
 
@@ -155,7 +152,7 @@ This folder contains Dimensions and FormView Classes.
 The `Dimension` class is in charge of just displaying the title `Triangle ...` for each triangle, the corresponding form and also the triangle tree.
 Within it `constructor`, we define the default triangle point coordinates `x` and `y` value as well.
 
-The `FormView` class contains a table with all input fields used to set each coordinates as well and also the buttons to rotate left or right or to shift our triangle to left or right based on student choice. It will pass it to our `Dimensions` Class to render the `Table`
+The `FormView` class contains a table with all input fields used to set each coordinates as well and also the buttons to rotate left or right or to shift our triangle to left or right based on student choice. It will pass it to our `Dimensions` Class to render the `Table`. As we have multiple input that are all similar, we created our `TableDatas` Component that return a single `td` with the right inputs.
 
 We then handle the form input changes with the `handlePChange` function that we pass to our form Component.
 
@@ -164,22 +161,21 @@ We then handle the form input changes with the `handlePChange` function that we 
 ```shell
 constructor(props) {
   super(props);
-  const { points } = props;
   this.state = {
     rotated: false,
-    points,
+    points: this.props,
   };
 }
+```
 
 > Our FormView constructor
 
 ```shell
 constructor(props) {
   super(props);
-  const { points, rotated } = props;
   this.state = {
-    rotated,
-    points,
+    rotated: this.props,
+    points: this.props,
   };
 }
 ```
@@ -220,8 +216,54 @@ handleRotate = (event) => {
 ```
 
 ## preview
-This folder contains our Tri class that draw and display our Triangle.
+Here we just import [react-konva](http://konvajs.github.io) library we used to draw our triangle. This folder contains our Tri class that draw and display our Triangle. The `Text` tag helped us to append our triangle laters to eat point at a specific coordinate.
 
+```shell
+const Tri = ({ color, node, points }) => (
+  <Layer>
+    ...
+  </Layer>
+);
+export default Tri;
+```
 
-# student
-This folder contain our main class that handle all changes. I mean it's four first classes parent. It calls the Dimensions then the button to make the comparison then everything is async.
+# Student View
+Basically our have Two different views: student and teacher's one. But currently all passes in the student view
+From here we just call our Dimension Class then pass all datas it needs to such as: the triangle, the translation, the update method, the triangles nodes as well as the related colors. We also pass the translation, triangles and flash parameters to our Simulation button class to automatically handle all changes.
+
+```shell
+const StudentView extends Component {
+  static propTypes = {
+    ...
+  }
+
+  constructor(props) {
+    ...
+  }
+}
+export default StudentView;
+```
+
+# Teach View
+
+For the moment our Teacher view just contain a welcome message nothing else. But we will certainly update it as soon as possible. But we pass the `t` in params to allow the translation function works.
+
+```shell
+const TeacherView = ({ t }) => (
+  <Layer>
+    ...
+  </Layer>
+);
+export default TeacherView;
+```
+
+# App.js
+
+This is the core App that handle our teacher and student views and render the corresponding. But default, we just set the student View as default one. So when our App loads, we see the student view that contains all the other stuffs. Note that in `React JS` everything in our App should be in separated components.
+
+# index.js
+
+Everything begins from here. The main parent that import our App.js, our style files and all necessary files we need on our App initialisation.
+
+# Translation
+We used the [react-i18next](https://github.com/i18next/react-i18next) library for the translation feature. But all our translation words are located in our `translate.json` file. We use the `t` params in all our components and classes to call the translation function, then we pass it the requested word for the translation to render the right text based on the params.

@@ -1,5 +1,5 @@
 ---
-title: Graasp Get Started With React
+title: Developer Resources
 
 language_tabs: # must be one of https://git.io/vQNgJ
   - shell
@@ -20,20 +20,32 @@ Also, we will help you well understand the building blocks of React apps: elemen
 
 You can view code examples in the dark area to the right.
 
-This guide is separated into several parts: <br>
-- Forking the initial repository <br>
-- Installing dependencies & Starting the application <br>
-- Setting linting `eslint-plugin-react` <br>
-- Testing the App
-- Adding your own dependencies <br>
+This guide is separated into several parts:
+
+- Forking the Starter Repository
+
+- Installing dependencies
+
+- Starting the application <br>
+
+- Code Style
+
+- Testing
+
+- Adding your own dependencies
+
 - Updating dependencies
 
-# Lab
+# Labs
 
-## Forking the initial repository
+Labs are a special type of application that power the core learning component of Graasp. Labs usually refer to subject-specific simulations or virtual experiments that can be run on the browser or within Graasp's mobile application. Labs usually have pedagogical requirements, which are out of the scope of this guide, that should be clear before one starts developing a lab. For example, if you want to develop a lab to teach students about pH, you should have a good idea about how this is taught in a typical Chemistry class. Technically speaking, however, labs are simple web applications, usually involving only HTML5, CSS and JavaScript. In this section we explain how to get you started developing labs using JavaScript frameworks such as React and Angular. Choose your preferred framework and start developing labs for education with this short guide.
+
+## React
+
+### Forking the Starter Repository
 
 This is the quickest way to get started!
-First, open the [graasp/react-get-started-app](https://github.com/react-epfl/graasp-app-starter-react) link in a new tab. Under the repository name, click Clone or download.
+First, open the [graasp/react-get-started-app](https://github.com/react-epfl/graasp-app-starter-react) link in a new tab. On the top-right of the repository, click fork. Then clone or download the cloned app from your own account.
 
 > You can also just clone using SSH or HTTPS
 
@@ -41,12 +53,17 @@ First, open the [graasp/react-get-started-app](https://github.com/react-epfl/gra
   git clone git@github.com:react-epfl/graasp-app-starter-react.git
 ```
 
-## Installing dependencies & Starting the application
+### Installing dependencies & Starting the application
 
-To install the application dependencies, <br>
-1- Open your `Terminal` <br>
-2- Navigate to the cloned of downloaded project directory or folder <br>
-3- Run `yarn install`. But make sure you already have yarn installed on your development environment for this. <br>
+To install the application dependencies
+
+1- Open your `Terminal`
+
+2- Navigate to the cloned of downloaded project directory or folder
+
+3- Run `yarn install`. But make sure you already have yarn installed on your development environment for this.
+
+### Starting the application
 
 To start your development server, run `yarn start` when all installations is completed and you're done.
 This script executes a Webpack development server with force reloading enabled. Then your server keep listening on all your modified files and reload your browser as well to apply changes an asynchronous way running on the port `3000` by default.
@@ -54,7 +71,7 @@ This script executes a Webpack development server with force reloading enabled. 
 Then navigate to `localhost:3000` to preview your application running.
 
 
-## Setting linting `eslint-plugin-react`
+### Code Style `eslint-plugin-react`
 
 ESLint is a tool for identifying and reporting on patterns found in ECMAScript/JavaScript code. Normally, it is configured by default (you can see the configuration [here](https://github.com/eslint/eslint)). Once you installed it, by restarting your server, you will see all synthax issues rendered in the terminal as well as the browser console.
 
@@ -64,6 +81,6 @@ ESLint is a tool for identifying and reporting on patterns found in ECMAScript/J
   // eslint-disable-next-line no-param-reassign
 ```
 
-## Testing the App
+### Testing
 
 To run tests just execute `yarn run test`. Note that the tests are also asynchronous. Then every time you save a file, the tests are re-run. You can read more about react testing [here](https://github.com/kentcdodds/react-testing-library).

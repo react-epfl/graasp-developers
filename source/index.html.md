@@ -16,17 +16,15 @@ search: true
 Welcome to the `Graasp Get Started with React App`! An initial project structure.
 This `Get Started React App` has been developed for starters adoption. You can use it as much as you need, add small to big modifications. All links in the sections and this documentation will help you get started.
 
-Also, we will help you well understand the building blocks of React apps: elements and components.
-
 You can view code examples in the dark area to the right.
 
-This guide is separated into several parts:
+This guide is divided into the following sections:
 
 - Forking the Starter Repository
 
-- Installing dependencies
+- Installing Dependencies
 
-- Starting the application <br>
+- Starting the application
 
 - Code Style
 
@@ -45,15 +43,15 @@ Labs are a special type of application that power the core learning component of
 ### Forking the Starter Repository
 
 This is the quickest way to get started!
-First, open the [graasp/react-get-started-app](https://github.com/react-epfl/graasp-app-starter-react) link in a new tab. On the top-right of the repository, click fork. Then clone or download the cloned app from your own account.
+First, open the [graasp/react-get-started-app](https://github.com/react-epfl/graasp-app-starter-react) link in a new tab. On the top right of the repository, click fork. Then clone or download the cloned app from your own account.
 
 > You can also just clone using SSH or HTTPS
 
 ```shell
-  git clone git@github.com:react-epfl/graasp-app-starter-react.git
+  git clone git@github.com:your-username/graasp-app-starter-react.git
 ```
 
-### Installing dependencies & Starting the application
+### Installing Dependencies
 
 To install the application dependencies
 
@@ -66,21 +64,21 @@ To install the application dependencies
 ### Starting the application
 
 To start your development server, run `yarn start` when all installations is completed and you're done.
-This script executes a Webpack development server with force reloading enabled. Then your server keep listening on all your modified files and reload your browser as well to apply changes an asynchronous way running on the port `3000` by default.
+This script executes a development server with force reloading enabled. Then your server keeps listening on all your modified files and reload your browser as well to apply changes an asynchronous way running on the port `3000` by default.
 
 Then navigate to `localhost:3000` to preview your application running.
 
 
-### Code Style `eslint-plugin-react`
+### Code Style
 
 ESLint is a tool for identifying and reporting on patterns found in ECMAScript/JavaScript code. Normally, it is configured by default (you can see the configuration [here](https://github.com/eslint/eslint)). Once you installed it, by restarting your server, you will see all synthax issues rendered in the terminal as well as the browser console.
 
 > In case you want to enforce a coding style, you can just use this tho disable eslint controls for a particular section or lines of code.
 
-```shell
-  // eslint-disable-next-line no-param-reassign
+```javascript
+  // eslint-disable-next-line no-param-reassign <here include the eslint rule you want to disable, e.g. no-param-reassign>
 ```
 
 ### Testing
 
-To run tests just execute `yarn run test`. Note that the tests are also asynchronous. Then every time you save a file, the tests are re-run. You can read more about react testing [here](https://github.com/kentcdodds/react-testing-library).
+To run tests just execute `yarn test`. Note that the tests are also asynchronous. Then every time you save a file, the tests are re-run. You can read more about React testing [here](https://github.com/kentcdodds/react-testing-library).

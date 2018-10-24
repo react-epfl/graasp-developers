@@ -2,7 +2,6 @@
 title: Developer Resources
 
 language_tabs: # must be one of https://git.io/vQNgJ
-  - shell
   - javascript
 
 toc_footers:
@@ -118,9 +117,7 @@ To add a new language to your app:
 
 # API
 
-## Apps
-
-### Authentication
+# Authentication
 
 Authentication is handled by the Graasp ecosystem. Apps hosted on the `graasp.eu` domain will receive
 the cookie from the Graasp context they are running in.
@@ -130,7 +127,7 @@ cookie that it receives from the parent.
 
 There are two types of users that we consider in the ecosystem and each is handled with its own cookie. 
 
-#### Graasp Users
+## Graasp Users
 
 Graasp users are those authenticated with their email via the `graasp.eu` platform. These are usually
 the teachers or authors of spaces.
@@ -138,7 +135,7 @@ the teachers or authors of spaces.
 In the case of Graasp Pages, if you access a space from the `viewer.graasp.eu` subdomain, Graasp users
 will be enforced.
 
-#### Light Users
+## Light Users
 
 Light users are those authenticated with a nickname, nickname and password combination, or anonymously.
 Light users usually represent the learners, students or consumers of a space.
@@ -146,14 +143,104 @@ Light users usually represent the learners, students or consumers of a space.
 In the case of Graasp Pages, if you access a space from the `cloud.graasp.eu` subdomain, light users
 will be enforced.
 
-### Endpoints
-
-#### App Instance
+# App Instance
 
 An app instance is a document that represents an instantiation of an app that has been configured to
-run inside a space.
+run inside a space. App instances are linked to one user, but can be potentially accessed by users
+with more permissions.
 
-#### App Instance Resources
+In order for an application to save data for a user, it needs to have an app instance. Inside an app
+instance, an app can save its state. Similarly, with an app instance, a client can create resources
+for it.
+
+## Create
+
+> In order to create an app instance you need to make a `POST` request to the following endpoint.
+
+> **POST /app-instances**
+
+
+> Example `POST` request body.
+
+```json
+{
+  "app": "5bd072b3532c3e058807decb",
+  "state": {
+    "modified": false,
+    "progress": 0
+  }
+}
+```
+
+Creating a new `AppInstance` object is done via a `POST` request and takes the following arguments
+inside of the body of the request.
+
+**Arguments**
+
+  - **app:** The string ID of the app, which corresponds to the app once it is configured.
+  - **state:** An string, object, array or other structure you want to seed the app instance with.
+
+## Read
+
+> In order to fetch a specific `AppInstance` you need to make a `GET` request to the following
+endpoint specifying the `id` of the `AppInstance` in question.
+
+> **GET /app-instances/:id**
+
+> In order to fetch all of the `AppInstance` objects for a given app, you need to make a `GET`
+request to the following endpoint, specifying the `appId` in question.
+
+> **GET /app-instances?appId=:appId**
+
+You can fetch a specific `AppInstance` or all of the `AppInstance` objects of an app by performing
+different types of `GET` requests.
+
+## Update
+
+> In order to update a specific `AppInstance` you need to make a `PATCH` request to the following
+endpoint specifying the `id` of the `AppInstance` in question.
+
+> **PATCH /app-instances/:id**
+
+> The body of your request should include the state with the **full** updated state. 
+
+> Example `PATCH` request body.
+
+```json
+{
+  "state": {
+    "modified": true,
+    "progress": 42
+  }
+}
+```
+
+You can update a specific `AppInstance` by performing a `PATCH` request and including the updated
+parts of the `AppInstance` inside the request's body. For clients, the most important part to
+consider is what is placed inside the `state` key, which is how clients handle the state of an
+`AppInstance` that they want to persist.
+
+<aside class="warning">
+  If you do not pass the <strong>full</strong> state, you will override the <code>AppInstance</code>
+  state <strong>without</strong> the ommitted information. 
+</aside>
+
+## Delete
+
+To delete an app instance, you can send a `DELETE` request.
+
+<aside class="warning">
+  This request is final. You will not be able to recover the <code>AppInstance</code> after it has
+  been deleted.
+</aside>
+
+> In order to update a specific `AppInstance` you need to make a `DELETE` request to the following
+endpoint specifying the `id` of the `AppInstance` in question.
+
+> **DELETE /app-instances/:id**
+
+
+# App Instance Resources
 
 An app instance resource is a document or object created by an instance of an app that can be either
 private to the app instance or public to any app running inside the space. The shape of an app
@@ -164,17 +251,16 @@ instance resource is as follows:
   appInstanceId: String,
   ...,
   content: {
-      // mixed content
-      ...
+    // mixed content
+    ...
   }
 }
-
 ```
 
 Any client of the API can insert arbitrary content (i.e. whatever it wants) inside the `content` key.
 This is limited to a bit less than 16MB by our database constraints.
 
-##### Create
+## Create
 
 To create an app instance resource an application needs to send a `POST` request to the following URL.
 
@@ -192,7 +278,7 @@ The body of this request needs to include the `content` of the resource inside t
 
 The response sent from the server will include the location of the newly created resource.
 
-##### Read
+## Read
 
 If the application is configured to create `public` resources, then any application running inside its
 same space will be able to access its resources. Otherwise, only the application itself will be able
@@ -280,7 +366,7 @@ To fetch a specific resource, you can do a `GET` request to the following endpoi
 
 The endpoint to fetch a single resource also supports `select` query parameters mentioned above.
 
-##### Update
+## Update
 
 To update the resource a client can send a `PATCH` request including the data that it wishes
 to updated inside the `content` key.
@@ -294,7 +380,7 @@ The endpoint for updating would be the following:
 /app-instances/:appInstanceId/resources/:resourceId
 ```
 
-##### Delete
+## Delete
 
 To delete a resource, a client would send a `DELETE` request to the following endpoint:
 
@@ -303,7 +389,7 @@ To delete a resource, a client would send a `DELETE` request to the following en
 ```
 
 
-### Testing
+# Testing
 
 You can test your apps' connection to our API locally using our development server. In order to do
 this, you need to configure your `localhost` to  point to `apps.dev.graasp.eu`.
@@ -315,10 +401,3 @@ In both cases, simply add the following line to the respective file:
 ```
 127.0.0.1   apps.dev.graasp.eu
 ```
-
-### 
-
-
-
-
-

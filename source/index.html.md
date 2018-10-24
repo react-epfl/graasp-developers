@@ -150,22 +150,23 @@ run inside a space. App instances are linked to one user, but can be potentially
 with more permissions.
 
 In order for an application to save data for a user, it needs to have an app instance. Inside an app
-instance, an app can save its state. Similarly, with an app instance, a client can create resources
+instance, an app can save its data. Similarly, with an app instance, a client can create resources
 for it.
 
 ## Create
 
 > In order to create an app instance you need to make a `POST` request to the following endpoint.
 
-> **POST /app-instances**
-
+```
+POST /app-instances
+```
 
 > Example `POST` request body.
 
 ```json
 {
   "app": "5bd072b3532c3e058807decb",
-  "state": {
+  "data": {
     "modified": false,
     "progress": 0
   }
@@ -178,19 +179,23 @@ inside of the body of the request.
 **Arguments**
 
   - **app:** The string ID of the app, which corresponds to the app once it is configured.
-  - **state:** An string, object, array or other structure you want to seed the app instance with.
+  - **data:** An string, object, array or other structure you want to seed the app instance with.
 
 ## Read
 
 > In order to fetch a specific `AppInstance` you need to make a `GET` request to the following
 endpoint specifying the `id` of the `AppInstance` in question.
 
-> **GET /app-instances/:id**
+```
+GET /app-instances/:id
+```
 
 > In order to fetch all of the `AppInstance` objects for a given app, you need to make a `GET`
 request to the following endpoint, specifying the `appId` in question.
 
-> **GET /app-instances?appId=:appId**
+```
+GET /app-instances?appId=:appId
+```
 
 You can fetch a specific `AppInstance` or all of the `AppInstance` objects of an app by performing
 different types of `GET` requests.
@@ -200,15 +205,17 @@ different types of `GET` requests.
 > In order to update a specific `AppInstance` you need to make a `PATCH` request to the following
 endpoint specifying the `id` of the `AppInstance` in question.
 
-> **PATCH /app-instances/:id**
+```
+PATCH /app-instances/:id
+```
 
-> The body of your request should include the state with the **full** updated state. 
+> The body of your request should include the data with the **full** updated data. 
 
 > Example `PATCH` request body.
 
 ```json
 {
-  "state": {
+  "data": {
     "modified": true,
     "progress": 42
   }
@@ -217,12 +224,12 @@ endpoint specifying the `id` of the `AppInstance` in question.
 
 You can update a specific `AppInstance` by performing a `PATCH` request and including the updated
 parts of the `AppInstance` inside the request's body. For clients, the most important part to
-consider is what is placed inside the `state` key, which is how clients handle the state of an
+consider is what is placed inside the `data` key, which is how clients handle the state of an
 `AppInstance` that they want to persist.
 
 <aside class="warning">
-  If you do not pass the <strong>full</strong> state, you will override the <code>AppInstance</code>
-  state <strong>without</strong> the ommitted information. 
+  If you do not pass the <strong>full</strong> data, you will override the <code>AppInstance</code>
+  data <strong>without</strong> the ommitted information. 
 </aside>
 
 ## Delete
@@ -237,157 +244,226 @@ To delete an app instance, you can send a `DELETE` request.
 > In order to update a specific `AppInstance` you need to make a `DELETE` request to the following
 endpoint specifying the `id` of the `AppInstance` in question.
 
-> **DELETE /app-instances/:id**
+```
+DELETE /app-instances/:id
+```
 
+# App Instance Resource
 
-# App Instance Resources
+> This is an example `AppInstanceResource`:
 
-An app instance resource is a document or object created by an instance of an app that can be either
-private to the app instance or public to any app running inside the space. The shape of an app
-instance resource is as follows:
-
-```javascript
+```json
 {
-  appInstanceId: String,
-  ...,
-  content: {
-    // mixed content
-    ...
+  "id": "5bd072b3532c3e058807aadf",
+  "appInstanceId": "5bd072b3532c3e058807decb",
+  "visibility": "private",
+  "content": {
+    "type": "review",
+    "results": {
+      "late": false,
+      "grade": 96
+    }
   }
 }
 ```
+
+An `AppInstanceResource` is a document or object created by an instance of an app that can be either
+private to the app instance or public to any app running inside the space. 
 
 Any client of the API can insert arbitrary content (i.e. whatever it wants) inside the `content` key.
 This is limited to a bit less than 16MB by our database constraints.
 
 ## Create
 
-To create an app instance resource an application needs to send a `POST` request to the following URL.
+> In order to create an `AppInstanceResource` you need to make a `POST` request to the following
+endpoint, specifying the `id` of the `AppInstance`.
 
-```html
-/app-instances/:id/resources
+```
+POST /app-instances/:id/resources
 ```
 
-The body of this request needs to include the `content` of the resource inside the `content` key.
+> Example `POST` request body.
 
-```javascript
+```json
 {
-  content: ..., 
+  "appInstanceId": "5bd072b3532c3e058807decb",
+  "content": {
+    "type": "plot",
+    "points": [
+      {
+        "x": 0,
+        "y": 0
+      },
+      {
+        "x": 1,
+        "y": 2
+      }
+    ]
+  }
 }
 ```
+
+Creating a new `AppInstanceResource` object is done via a `POST` request and takes the following arguments
+inside of the body of the request.
+
+**Arguments**
+
+  - **appInstanceId:** The string ID of the `AppInstance` creating the resource.
+  - **content:** An string, object, array or other structure you want to store inside the resource.
 
 The response sent from the server will include the location of the newly created resource.
 
 ## Read
 
-If the application is configured to create `public` resources, then any application running inside its
-same space will be able to access its resources. Otherwise, only the application itself will be able
-to read its own resources.
+> In order to fetch a specific `AppInstanceResource` you need to make a `GET` request to the
+following endpoint specifying the `id` of the `AppInstance` and the `AppInstanceResource` in
+question.
 
-To fetch the resources that an app has created, any client of the API can perform a `GET` request to
-the following endpoint.
-
-```html
-/app-instances/:id/resources
+```
+GET /app-instances/:appInstanceId/resources/:appInstanceResourceId
 ```
 
-To fetch the **public** resources that have been created inside a given space, you perform the following
+> In order to fetch all of the `AppInstanceResource` objects for a given `AppInstance`, you need to
+make a `GET` request to the following endpoint, specifying the `appInstanceId` in question.
+
+```
+GET /app-instances/:appInstanceId/resources
+```
+
+> To fetch the **public** resources that have been created inside a given space, you perform the following
 `GET` request.
 
-```html
-/spaces/:id/resources
+> In order to fetch all of the *public* `AppInstanceResource` objects for a given `Space`, you need
+to make a `GET` request to the following endpoint, specifying the `spaceId` in question.
+
+```
+GET /spaces/:spaceId/resources
 ```
 
-Both aforementioned endpoints support a query string with the following options.
+> Example `GET` request for public resources in a space:
 
-  - `query`: A MongoDB-style query that we will run against the data inside the `content` key. 
-  - `select`: A MongoDB-style select that we will run against the data inside the `content key.
-  - `...`
-
-```html
-?query=...&select=...
+```
+GET /spaces/1/resources?query={group:2}&select={result:1}
 ```
 
-Both the `query` and the `select` options are intended to allow consumers of the API to filter and
-project parts of the resources that have been saved for a given app or space.
+> If we assume that the public resources inside space `1` are the following:
 
-An example follows:
-
-```html
-/spaces/:id/resources?query={a:1}&select={b:1}
-```
-
-A `GET` request to the endpoint above would get all of the public resources for space `:id` where
-`a` inside the `content` key is equal to `1` and will return only key `b` from inside the `content` key.
-
-If we assume that the resources inside a space are the following:
-
-```javascript
+```json
 [
   {
-    _id: 1,
-    content: {
-      a: 1,
-      b: 2,
+    "id": "1",
+    "content": {
+      "groupId": 1,
+      "result": 78
     }
   },
   {
-    _id: 2,
-    content: {
-      a: 1,
-      b: 3,
+    "id": "2",
+    "content": {
+      "groupId": 2,
+      "result": 94
     }
   },
   {
-    _id: 3,
-    content: {
-      a: 2,
-      b: 3,
+    "id": "3",
+    "content": {
+      "groupId": 2,
+      "result": 99
     }
   }
 ]
 ```
 
-Then the query above would return the values of `b` for documents with `_id` equal to `1` and `2`,
-which is where `a` is equal to `1`.
+> A `GET` request to the endpoint above would get all of the public resources for a given space that
+have a key `group` inside the `content` object equal to `2`. It will return only key `results` from
+inside the `content` key.
 
-```javascript
+```json
 [
-  { _id: 1, content: { b: 2 } },
-  { _id: 2, content: { b: 3 } }
+  { "id": "2", "content": { "result": 94 } },
+  { "id": "3", "content": { "result": 99 } } 
 ]
 ```
+> Note that the `id` is returned by default unless specified as `{ id: 0 }` inside the `select`.
 
-To fetch a specific resource, you can do a `GET` request to the following endpoint.
+You can fetch a specific `AppInstanceResources`, all of the `AppInstanceResources` objects of an
+`AppInstance` or all of the *public* `AppInstanceResources` in a space by performing different
+types of `GET` requests.
 
-```html
-/app-instances/:appInstanceId/resources/:resourceId
-```
+The endpoints to fetch multiple `AppInstanceResource` objects support a query string with the
+following options.
+
+**URL Parameters**
+
+  - `query`: A MongoDB-style **query** that we will run against the data inside the `content` key. 
+  - `select`: A MongoDB-style **select** that we will run against the data inside the `content` key.
+
+Both the `query` and the `select` options are intended to allow consumers of the API to filter and
+project parts of the resources that have been saved for a given `AppInstance` or `Space`.
 
 The endpoint to fetch a single resource also supports `select` query parameters mentioned above.
 
 ## Update
 
-To update the resource a client can send a `PATCH` request including the data that it wishes
-to updated inside the `content` key.
+> In order to update a specific `AppInstanceResource` you need to make a `PATCH` request to the
+following endpoint specifying the `id` of the `AppInstance` and the `AppInstanceResource` in
+question.
 
-Note that you need to send the **complete** content that you wish to replace the **current**
-value of the `content` key with.
-
-The endpoint for updating would be the following:
-
-```html
-/app-instances/:appInstanceId/resources/:resourceId
 ```
+PATCH /app-instances/:appInstanceId/resources/:resourceId
+```
+
+> The body of your request should include the data with the **full** updated content. 
+
+> Example `PATCH` request body.
+
+```json
+{
+  "content": {
+      "type": "plot",
+      "points": [
+        {
+          "x": 0,
+          "y": 0
+        },
+        {
+          "x": 1,
+          "y": 2
+        },
+        {
+          "x": 2,
+          "y": 4
+        }
+      ]
+    }
+}
+```
+
+You can update a specific `AppInstanceResource` by performing a `PATCH` request and including the
+updated parts of the `AppInstanceResource` inside the request's body. For clients, the most
+important part to consider is what is placed inside the `content` key, which is how clients handle
+the state of an `AppInstanceResource` that they want to persist.
+
+<aside class="warning">
+  If you do not pass the <strong>full</strong> content, you will override the
+  <code>AppInstance</code> content <strong>without</strong> the ommitted information. 
+</aside>
 
 ## Delete
 
-To delete a resource, a client would send a `DELETE` request to the following endpoint:
+To delete an `AppInstanceResource`, you can send a `DELETE` request.
+
+<aside class="warning">
+  This request is final. You will not be able to recover the <code>AppInstanceResource</code>
+  after it has been deleted.
+</aside>
+
+> In order to update a specific `AppInstance` you need to make a `DELETE` request to the following
+endpoint specifying both the `id` of the `AppInstance` and of the `AppInstanceResource` in question.
 
 ```
-/app-instances/:appInstanceId/resources/:resourceId
+DELETE /app-instances/:appInstanceId/resources/:resourceId
 ```
-
 
 # Testing
 

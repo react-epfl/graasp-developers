@@ -20,19 +20,21 @@ You can view code examples in the dark area to the right.
 
 This guide is divided into the following sections:
 
-- Forking the Starter Repository
+-    Forking the Starter Repository
 
-- Installing Dependencies
+-    Installing Dependencies
 
-- Starting the application
+-    Starting the application
 
-- Code Style
+-    Code Style
 
-- Testing
+-    Testing
 
-- Adding your own dependencies
+-    Adding your own dependencies
 
-- Updating dependencies
+-    Updating dependencies
+
+-    Internationalization
 
 # Labs
 
@@ -82,6 +84,35 @@ ESLint is a tool for identifying and reporting on patterns found in ECMAScript/J
 ### Testing
 
 To run tests just execute `yarn test`. Note that the tests are also asynchronous. Then every time you save a file, the tests are re-run. You can read more about React testing [here](https://github.com/kentcdodds/react-testing-library).
+
+### Internationalization
+
+The starter app supports internationalization using the react-i18next library.
+
+To add a new language to your app:
+
+1- Add a language json file under `src/langs`. For example `de.json` for German.
+
+2- Add your language translations using a key value pairs format. The key being the expression you use in your source code and the value beings its corresponding translation.  For example: "Welcome to the Graasp App Starter Kit": "Willkommen im Graasp App Starter Kit".
+
+3- Import and add you language json to the react-i18next library under `src/config/i18n.js` by adding your language to the resources.
+
+4- Add a language query string to your links to show the translated version of the app. For example: `http://localhost:3000/?mode=student&lang=de`.
+
+5- To allow teachers and students to be able to change the language, a select box is available by default in the header. 
+
+> You could remove this select box or include it in either the student or the teacher components by copying it along with the changeLanguage and colorStyles methods and editing the options array under `src/constants/langs` to add your new languages.
+
+```javascript
+  <Select
+    styles={this.colorStyles}
+    className="LanguageSelector"
+    defaultValue={options[0]}
+    options={options}
+    value={selectedLanguage}
+    onChange={this.changeLanguage}
+  />
+```
 
 
 # API

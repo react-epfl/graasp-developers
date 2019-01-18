@@ -114,7 +114,6 @@ To add a new language to your app:
   />
 ```
 
-
 # API
 
 # Authentication
@@ -140,6 +139,18 @@ Light users usually represent the learners, students or consumers of a space.
 
 If one opens a Graasp page using the `cloud.graasp.eu` link, light users will be enforced.
 
+# App Running Context
+
+When an embedded app is loading in an ILS, a set of query parameters is passed down to it to provide the appropriate running context. These parameters can be necessary to call the API.
+
+The most important parameter is *`appInstanceId`*. In most calls to the API, this ID needs to be specified.
+
+Other parameters:
+
+  - **appInstanceId**: ID of the `app-instance` of linked to running app (more details about `app-instances` below)
+  - **spaceId**: ID of the space/ILS where the app is localed
+  - **subSpaceId**: ID of the sub-space/phase where the app is localed
+  - **userId|sessionId**: the user identifier, for both the case where a "real" (Graasp/Light) user is accessing the space/ILS, or the case where the content is public and a simple session ID is assigned to this "ephemeral" user.
 
 # Entities: App-Instance
 
@@ -288,6 +299,22 @@ The deleted `app-instance-resource` JSON object will be returned after a success
 <aside class="warning">
   This request is final. You will not be able to recover the <code>app-instance-resource</code> after it has been deleted.
 </aside>
+
+# Entities: User
+
+## Get
+> Example of a returned `user` JSON object:
+
+```json
+{
+  "id" : "<user id>",
+  "name": "<user's name>",
+  "email": "<user's email>"
+}
+```
+In order to get the current `user` (linked to the current cookie session) one needs to make a `GET` request to `/users/current`.
+
+In order to get some `user` one needs to make a `GET` request to `/users/<id>`. In this case the `email` information will be ommitted.
 
 # Testing
 

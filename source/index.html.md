@@ -316,6 +316,32 @@ In order to get the current `user` (linked to the current cookie session) one ne
 
 In order to get some `user` one needs to make a `GET` request to `/users/<id>`. In this case the `email` information will be ommitted.
 
+# Entities: Spaces
+
+An `space` document represents a Graasp space.
+
+Both Graasp Users and Light Users can use the API endpoints for this entitiy, except if signaled otherwise.
+
+## Get light-users
+> Example of a list of light-users belonging to a space:
+
+```json
+[
+  {
+    "id" : "<user1 id>",
+    "name": "<user1's name>"
+  },
+  {
+    "id" : "<user2 id>",
+    "name": "<user2's name>"
+  },
+]
+```
+
+To get the light-users that belong to a space, only the ones with authentication schemes based on a username, or username with password, one should make a `GET` request to `/spaces/<id>/light-users`.
+
+<aside class="warning">This endpoint can only be accessed by Graasp Users which have permissions to access the space.</aside>
+
 # Testing
 
 You can test your apps' connection to our API locally using our development server. In order to do

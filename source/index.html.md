@@ -310,17 +310,42 @@ The deleted `app-instance-resource` JSON object will be returned after a success
   "id" : "<user id>",
   "name": "<user's name>",
   "email": "<user's email>"
+  "type": "<graasp|light>"
 }
 ```
 In order to get the current `user` (linked to the current cookie session) one needs to make a `GET` request to `/users/current`.
 
 In order to get some `user` one needs to make a `GET` request to `/users/<id>`. In this case the `email` information will be ommitted.
 
+The `type` field can be either `graasp` (normal graasp user) or `light` (users created _on-the-fly_ when _viewing/using_ a space/ILS, based on the authentication scheme chosen by the owner of the space/ILS: username, username with password, or anonymous)
+
 # Entities: Spaces
 
 An `space` document represents a Graasp space.
 
 Both Graasp Users and Light Users can use the API endpoints for this entitiy, except if signaled otherwise.
+
+## Get users
+> Example of a list of users belonging to a space:
+
+```json
+[
+  {
+    "id" : "<user1 id>",
+    "name": "<user1's name>",
+    "type": "graasp"
+  },
+  {
+    "id" : "<user2 id>",
+    "name": "<user2's name>",
+    "type": "light"
+  }
+]
+```
+
+To get the users that belong to a space one should make a `GET` request to `/spaces/<id>/users`.
+
+<aside class="warning">This endpoint can only be accessed by Graasp Users which have permissions to access the space.</aside>
 
 ## Get light-users
 > Example of a list of light-users belonging to a space:
@@ -338,7 +363,7 @@ Both Graasp Users and Light Users can use the API endpoints for this entitiy, ex
 ]
 ```
 
-To get the light-users that belong to a space, only the ones with authentication schemes based on a username, or username with password, one should make a `GET` request to `/spaces/<id>/light-users`.
+To get the light-users that belong to a space, the ones with authentication schemes based on a username, username with password, or _anonymous_, one should make a `GET` request to `/spaces/<id>/light-users`.
 
 <aside class="warning">This endpoint can only be accessed by Graasp Users which have permissions to access the space.</aside>
 

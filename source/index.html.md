@@ -379,3 +379,224 @@ In both cases, simply add the following line to the respective file:
 ```
 127.0.0.1   apps.dev.graasp.eu
 ```
+
+# Offline
+
+Apps and labs that want to be able to run offline can still make calls to local APIs provided by
+the Graasp Desktop and Graasp App offline clients. These calls will tell the client to write or
+fetch information from their local databases. Not all of the calls are supported, though. In this
+section we outline how to setup the appropriate listeners and how to run the calls.
+
+## Downloading
+
+When an app is downloaded for offline use, its `AppInstance` object and all of the **public**
+`AppInstanceResource` objects will be downloaded along with it. These objects will be available for
+the application to get from within its offline context.
+
+## Context
+
+An application running inside an offline client will be sent the `?offline=true` flag in its query
+string. This flag should be used by offline-ready applications to show a different offline UI, if
+needed, and fall back to calling the offline API rather than the online one.
+
+For example, in order to reduce the number of calls to the offline API and thus the amount of disk
+I/O, the Graasp Input App will disable auto-saving functionality if offline, and instead show a
+"Save" button to the user.
+
+```javascript
+// simplified example of rendering a button only when offline, using the react framework
+renderButton() {
+  const { offline } = this.props;
+
+  // button is only visible offline
+  if (!offline) {
+    return null;
+  }
+  return (
+    <Button
+      variant="contained"
+      color="primary"
+      onClick={this.handleClickSaveText}
+    >
+      Save
+    </Button>
+  );
+}
+
+// simplified example of an onchange event handler that calls the api only when online
+handleChangeText = ({ target }) => {
+  const { value } = target;
+  const { offline } = this.props;
+  this.setState({
+    text: value,
+  });
+  // only save automatically if online
+  if (!offline) {
+    this.saveToApi({ data: value });
+  }
+};
+```  
+
+These are just some example of all of the logic that can be dependent on whether or not an app is
+running within an offline context.
+
+## Types of Messages
+
+The offline API, when replying, will always send a message with a `type` and `payload`.
+
+```json
+{
+  "type": <TYPE>,
+  "payload": <PAYLOAD>
+}
+```
+
+The payload will be similar to the response that you would expect, for a given call, from the
+online API. However, because the responses are being sent through the messaging channel, we need
+to be able to distinguish what type of message is being sent/received. We achieve this by having
+a standard for `PostMessageType` and for `ReceiveMessageType`. You should define these in
+your application.
+
+```javascript
+// PostMessageType
+export const GET_APP_INSTANCE = 'GET_APP_INSTANCE';
+export const GET_APP_INSTANCE_RESOURCES = 'GET_APP_INSTANCE_RESOURCES';
+export const PATCH_APP_INSTANCE_RESOURCE = 'PATCH_APP_INSTANCE_RESOURCE';
+export const POST_APP_INSTANCE_RESOURCE = 'POST_APP_INSTANCE_RESOURCE';
+
+// ReceiveMessageType
+export const GET_APP_INSTANCE_SUCCEEDED = 'GET_APP_INSTANCE_SUCCEEDED';
+export const GET_APP_INSTANCE_RESOURCES_SUCCEEDED = 'GET_APP_INSTANCE_RESOURCES_SUCCEEDED';
+export const PATCH_APP_INSTANCE_RESOURCE_SUCCEEDED = 'PATCH_APP_INSTANCE_RESOURCE_SUCCEEDED';
+export const POST_APP_INSTANCE_RESOURCE_SUCCEEDED = 'POST_APP_INSTANCE_RESOURCE_SUCCEEDED';
+```
+
+## API
+
+By leveraging the `offline` flag provided by in the query string, the app can fall back on using
+the offline API. The offline API uses the `postMessage` functionality to send messages to the
+offline client and the `window.addEventListener` functionality to receive messages from the client.
+
+To register to receive messages from the client, you should first have a function that will run
+every time a message is received. Messages sent from the offline client will always have a `type`
+and a `payload`. The types will be one of the ones defined above.
+
+```javascript
+const receiveMessage = event => {
+  const { data } = event;
+  try {
+    const message = JSON.parse(data);
+
+    const { type, payload } = message;
+
+    // do something with the payload given the type
+    // ...
+
+  } catch (err) {
+    console.error(err);
+  }
+}
+```
+
+Once you have your `receiveMessage` handler, you need to register it to listen to the `'message'`
+event. Hence the following code should run once in the app.
+
+```javascript
+// if offline, we need to set up the listeners here
+if (offline) {
+  window.addEventListener('message', receiveMessage);
+}
+```
+
+Every time the app receives a message, the `receiveMessage` handler will be called and it can
+update itself accordingly.
+
+Sending a message is a very similar process. Wherever your app is requesting information from the
+online API, you can include a conditional so that if the app is in an offline context, it can
+request from the offline API instead by posting a message using `postMessage`.
+
+For this it needs to include the `type`, which is one of the `PostMessageType` strings outlined
+above, as well as a payload, which is similar to that of the online API, but might include some
+extra details.
+
+Currently, the following `postMessage` calls are supported.
+
+To get the `AppInstance`, you post a message of type `GET_APP_INSTANCE`, along with the ID of
+the `AppInstance`, `Space` and `SubSpace`, which have been passed down through the url.
+
+
+```javascript
+// example offline api call to get the app instance
+if (offline) {
+  return postMessage({
+    type: GET_APP_INSTANCE,
+    payload: {
+      id: appInstanceId,
+      spaceId,
+      subSpaceId,
+    },
+  });
+}
+```
+
+To get the all `AppInstanceResource` objects, you post a message of type
+`GET_APP_INSTANCE_RESOURCES`, along with the optional `type` of `AppInstanceResource`, as well as
+the IDs of the `AppInstance`, `Space` and `SubSpace`, which have been passed down through the url.
+
+```javascript
+// example offline api call to get the app instance resources
+if (offline) {
+  return postMessage({
+    type: GET_APP_INSTANCE_RESOURCES,
+    payload: {
+      type,
+      spaceId,
+      subSpaceId,
+      appInstanceId,
+    },
+  });
+}
+```
+
+To create an `AppInstanceResource`, you post a message of type `POST_APP_INSTANCE_RESOURCE`,
+along with the `data`, optional `type` and `format` of `AppInstanceResource`, as well as mandatory
+IDs of the `Space`, `SubSpace`, `AppInstance` and `User`, which have been passed down through the
+url.
+
+```javascript
+// example offline api call to create an app instance resource
+if (offline) {
+  return postMessage({
+    type: POST_APP_INSTANCE_RESOURCE,
+    payload: {
+      data,
+      type,
+      format,
+      spaceId,
+      subSpaceId,
+      appInstanceId,
+      userId,
+    },
+  });
+}
+```
+
+To update an `AppInstanceResource`, you post a message of type `PATCH_APP_INSTANCE_RESOURCE`,
+along with the `data` and the IDs of the `AppInstanceResource`, `Space`, `SubSpace`,
+`AppInstance`, which have been passed down through the url.
+
+```javascript
+// example offline api call to patch an app instance resource
+if (offline) {
+  return postMessage({
+    type: PATCH_APP_INSTANCE_RESOURCE,
+    payload: {
+      id: appInstanceResourceId,
+      spaceId,
+      subSpaceId,
+      appInstanceId,
+      data,
+    },
+  });
+}
+``` 

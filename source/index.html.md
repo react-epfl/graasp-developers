@@ -36,9 +36,49 @@ This guide is divided into the following sections:
 
 -    Internationalization
 
+# Applications
+
+There are two types of applications within the Graasp ecosystem: **Apps** and **Labs**. Both are
+HTML5 applications.
+
+# Apps
+
+Apps refer to the scaffolding applications that support learning no matter what the subject matter
+might be. For example, one could co
+
+## Examples
+
+### Input
+
+The *Input* app is a simple app that allows a viewer to submit text so that the editors of the space
+in which the app is embedded can review. This is particularly useful when you consider the viewer
+to be a student and the editor to be a teacher. The teacher can then submit feedback to the student
+as well as visualise all of the responses either in a table or a word cloud.
+
+This app uses all of the functionalities of the API, as well as the different modes and views. It
+also supports the offline viewers. 
+
+[Demo](https://apps.graasp.eu/5acb589d0d5d9464081c2d46/5cde9891226a7d20a8a16697/latest/index.html)
+
+[Repository](https://github.com/graasp/graasp-app-input)
+
+### Badges
+
+The *Badges* app allows educators to assign badges to learners within the Graasp ecosystem. The
+editors of the space can view the list of learners that are using their space and assign medals,
+points, trophies or badges that the learners will then see when visiting the space.
+
+This app uses all of the functionalities of the API, including different modes and views. However,
+it does not support the offline viewers.
+
+[Demo](https://apps.graasp.eu/5c49d768d4f5a097d860594b/5c49d8f11db8e33c481304b4/latest/index.html)
+
+[Repository](https://github.com/graasp/graasp-app-badges)
+
 # Labs
 
-Labs are a special type of application that power the core learning component of Graasp. Labs usually refer to subject-specific simulations or virtual experiments that can be run on the browser or within Graasp's mobile application. Labs usually have pedagogical requirements, which are out of the scope of this guide, that should be clear before one starts developing a lab. For example, if you want to develop a lab to teach students about pH, you should have a good idea about how this is taught in a typical Chemistry class. Technically speaking, however, labs are simple web applications, usually involving only HTML5, CSS and JavaScript. In this section we explain how to get you started developing labs using JavaScript frameworks such as React and Angular. Choose your preferred framework and start developing labs for education with this short guide.
+Labs are a special type of application that power the core learning component of Graasp. Labs usually refer to subject-specific simulations or virtual experiments that can be run on the browser or within Graasp's offline viewers.
+Labs usually have pedagogical requirements, which are out of the scope of this guide, that should be clear before one starts developing a lab. For example, if you want to develop a lab to teach students about pH, you should have a good idea about how this is taught in a typical Chemistry class. Technically speaking, however, labs are simple web applications, usually involving only HTML5, CSS and JavaScript. In this section we explain how to get you started developing labs using JavaScript frameworks such as React and Angular. Choose your preferred framework and start developing labs for education with this short guide.
 
 ## React
 
@@ -152,19 +192,19 @@ Other parameters:
   - **subSpaceId**: ID of the sub-space/phase where the app is localed
   - **userId|sessionId**: the user identifier, for both the case where a "real" (Graasp/Light) user is accessing the space/ILS, or the case where the content is public and a simple session ID is assigned to this "ephemeral" user.
 
-# Entities: App-Instance
+# Entities: AppInstance
 
-An `app-instance` is a document that represents, as the name implies, an instance of an app that will run inside a space.
+An `AppInstance` is a document that represents, as the name implies, an instance of an app that will run inside a space.
 
-The main property of an `app-instance` is the `settings`. This property's purpose is to store app configuration
+The main property of an `AppInstance` is the `settings`. This property's purpose is to store app configuration
 data. As an app developer, you should only care about modifying or reading this property.
 
-Each `app-instance` is also linked to a Graasp `item` where the app's url is stored along with other metadata related to Graasp.
+Each `AppInstance` is also linked to a Graasp `item` where the app's url is stored along with other metadata related to Graasp.
 
 <aside class="warning">App instances, and its corresponding endpoint, can only be accessed by Graasp Users.</aside>
 
 ## Get
-> Example of returned `app-instance` JSON object:
+> Example of returned `AppInstance` JSON object:
 
 ```json
 {
@@ -176,7 +216,7 @@ Each `app-instance` is also linked to a Graasp `item` where the app's url is sto
 }
 ```
 
-In order to read an `app-instance` one needs to make a `GET` request to `/app-instances/<id>`.
+In order to read an `AppInstance` one needs to make a `GET` request to `/app-instances/<id>`.
 
 A JSON structure similar to the one on the right will be returned.
 
@@ -200,14 +240,14 @@ The resulting updated `app-instance` JSON object will be returned after a succes
 
 The creation and deletion of this type of entity is not available in the API - `app-instances` are created/deleted when the corresponding item/app is created/deleted in Graasp.
 
-# Entities: App-Instance-Resource
+# Entities: AppInstanceResource
 
-An `app-instance-resource` is a document that holds data linked to a specific app and user pair.
+An `AppInstanceResource` is a document that holds data linked to a specific app and user pair.
 It can be anything, be it some user input or some metadata generated by the app and related to that user.
 
-For the same user and app pair there can be any number of `app-instance-resources`.
+For the same user and app pair there can be any number of `AppInstanceResource` objects.
 
-`app-instance-resources` can be potentially accessed by other users with more permissions.
+`AppInstanceResource` objects can be potentially accessed by other users with more permissions.
 
 Both Graasp Users and Light Users can use the API endpoints for this entitiy.
 
@@ -228,21 +268,21 @@ Both Graasp Users and Light Users can use the API endpoints for this entitiy.
 }
 ```
 
-In order to create an `app-instance-resource` one needs to make a `POST` request to `/app-instance-resources`.
+In order to create an `AppInstanceResource` one needs to make a `POST` request to `/app-instance-resources`.
 
 The request's body should contain a JSON object similar to the one provided in the example.
 
 **JSON object's properties:**
 
-  - **appInstance:** The `app-instance`'s ID. Mandatory.
+  - **appInstance:** The `AppInstance`'s ID. Mandatory.
   - **data:** Any valid JSON. Defaults to `null`.
   - **type:** Some string representing the type of data being saved. This property can later be used to
-  filter results while fetching `app-instance-resources`.
+  filter results while fetching `AppInstanceResource` objects.
   - **format:** Some string representing the format of the data being saved. Similarly to `type`, this property can later be used to
-  filter results while fetching `app-instance-resources`.
-  - **visibility:** The possible values are `private` or `public. A private `app-instance-resource` can only be read in the context of its specific app and user pair. A 'public' `app-instance-resource` can be accessed in the context of other apps and users. Defaults to `private`.
+  filter results while fetching `AppInstanceResource` objects.
+  - **visibility:** The possible values are `private` or `public`. A private `AppInstanceResource` can only be read in the context of its specific app and user pair. A 'public' `AppInstanceResource` can be accessed in the context of other apps and users. Defaults to `private`.
 
-The resulting `app-instance-resource` JSON object will be returned after a successful create request.
+The resulting `AppInstanceResource` JSON object will be returned after a successful create request.
 
 ## Get
 
@@ -251,7 +291,7 @@ To fetch `app-instance-resources` one needs to make a `GET` request to `/app-ins
 ```
 GET /app-instance-resources/<id>
 ```
-Fetching a single `app-instance-resource`, by appending its ID in the endpoint's path:
+Fetching a single `AppInstanceResource`, by appending its ID in the endpoint's path:
 
 &nbsp;
 &nbsp;
@@ -264,18 +304,18 @@ GET /app-instance-resources?
   [&format=<format string>]
 ```
 
-Fetching multiple `app-instance-resources`, matching a specific filter passed as a query string:
+Fetching multiple `AppInstanceResource` objects, matching a specific filter passed as a query string:
 
 **Query parameters:**
 
-  - **appInstanceId:** The `app-instance`'s ID. Mandatory.
-  - **userId:** If one is trying to fetch other user's `app-instance-resources`, this parameter should be present. Only a Graasp user with admin rights over the app can make this request.
+  - **appInstanceId:** The `AppInstance`'s ID. Mandatory.
+  - **userId:** If one is trying to fetch other user's `AppInstanceResource` objects, this parameter should be present. Only a Graasp user with admin rights over the app can make this request.
   - **type:** To filter a specific *type*.
   - **format:** To filter a specific *format*.
 
 ## Update
 
-To update an `app-instance-resource` one should issue a `PATCH` request to `/app-instance-resources/<id>`
+To update an `AppInstanceResource` one should issue a `PATCH` request to `/app-instance-resources/<id>`
 
 ```json
 {
@@ -287,14 +327,14 @@ To update an `app-instance-resource` one should issue a `PATCH` request to `/app
 ```
 The request's body should contain a JSON object with a `data` property defined (see the example). Any other properties will be discarded.
 
-The resulting updated `app-instance-resource` JSON object will be returned after a successful update request.
+The resulting updated `AppInstanceResource` JSON object will be returned after a successful update request.
 
 
 ## Delete
 
-To delete an `app-instance-resource`, one can send a `DELETE` request to `/app-instance-resources/<id>`, passing in the path the ID of the `app-instance-resource`to be delete.
+To delete an `AppInstanceResource`, one can send a `DELETE` request to `/app-instance-resources/<id>`, passing in the path the ID of the `AppInstanceResource` to be deleted.
 
-The deleted `app-instance-resource` JSON object will be returned after a successful delete request.
+The deleted `AppInstanceResource` JSON object will be returned after a successful delete request.
 
 <aside class="warning">
   This request is final. You will not be able to recover the <code>app-instance-resource</code> after it has been deleted.
@@ -303,7 +343,7 @@ The deleted `app-instance-resource` JSON object will be returned after a success
 # Entities: User
 
 ## Get
-> Example of a returned `user` JSON object:
+> Example of a returned `User` JSON object:
 
 ```json
 {
@@ -313,15 +353,15 @@ The deleted `app-instance-resource` JSON object will be returned after a success
   "type": "<graasp|light>"
 }
 ```
-In order to get the current `user` (linked to the current cookie session) one needs to make a `GET` request to `/users/current`.
+In order to get the current `User` (linked to the current cookie session) one needs to make a `GET` request to `/users/current`.
 
-In order to get some `user` one needs to make a `GET` request to `/users/<id>`. In this case the `email` information will be ommitted.
+In order to get some `User` one needs to make a `GET` request to `/users/<id>`. In this case the `email` information will be ommitted.
 
 The `type` field can be either `graasp` (normal graasp user) or `light` (users created _on-the-fly_ when _viewing/using_ a space/ILS, based on the authentication scheme chosen by the owner of the space/ILS: username, username with password, or anonymous)
 
 # Entities: Spaces
 
-An `space` document represents a Graasp space.
+An `Space` document represents a Graasp space.
 
 Both Graasp Users and Light Users can use the API endpoints for this entitiy, except if signaled otherwise.
 
@@ -343,7 +383,7 @@ Both Graasp Users and Light Users can use the API endpoints for this entitiy, ex
 ]
 ```
 
-To get the users that belong to a space one should make a `GET` request to `/spaces/<id>/users`.
+To get the users that belong to a `Space` one should make a `GET` request to `/spaces/<id>/users`.
 
 <aside class="warning">This endpoint can only be accessed by Graasp Users which have permissions to access the space.</aside>
 
